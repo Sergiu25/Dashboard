@@ -1,10 +1,17 @@
+package model;
+
 public class Benefit {
     private int id;
     private String name;
     private double cost;
+    public Benefit(int id, String name, double cost) {
+        this.id = id;
+        this.name = name;
+        this.cost = cost;
+    }
     @Override
     public String toString(){
-        return "Beneficiu{"+id+","+name+","+cost+"}";
+        return "model.Benefit{id="+id+", name="+name+", cost="+cost+"}";
     }
 
     public int getId() {

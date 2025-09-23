@@ -1,31 +1,60 @@
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import model.Employee;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class App extends Application{
 
+    private Stage primaryStage;
+
     @Override
     public void start(Stage primaryStage){
-        //Create the button
-        Button btn = new Button("Click Me");
+        this.primaryStage = primaryStage;
+        primaryStage.setTitle("Dashboard");
 
-        //Add action on click
-        btn.setOnAction(event->{System.out.println("The button was pressed!");});
+        showMainMenu();
+    }
+    private void showMainMenu(){
+        Button employeeBtn= new Button("Manage Employees");
+        employeeBtn.setOnAction(e -> showEmployeeScene());
 
-        //We position the button to a simple layout
+        Button benefitBtn= new Button("Manage Benefits");
+        benefitBtn.setOnAction(e -> {
+            //Placeholder temporary
+            Button backBtn= new Button("Back");
+            backBtn.setOnAction(ev->showMainMenu());
+            VBox box= new VBox(20,new javafx.scene.control.Label("Benefits in work..."),backBtn);
+            primaryStage.setScene(new Scene(box,400,300));
+        });
 
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
+        Button exitBtn= new Button("Exit");
+        exitBtn.setOnAction(e ->primaryStage.close());
 
-        //Create the scene
-        Scene scene = new Scene(root,300,200);
-        primaryStage.setTitle("Dashbord");
-        primaryStage.setScene(scene);
+        VBox menu=new VBox(10,employeeBtn,benefitBtn,exitBtn);
+        menu.setStyle("-fx-alignment: CENTER; -fx-padding: 50;");
+
+        primaryStage.setScene(new Scene(menu,400,300));
         primaryStage.show();
     }
+    private void showEmployeeScene(){
+        EmployeeUI employeeUI = new EmployeeUI(this);
+        primaryStage.setScene(employeeUI.getScene());
+    }
+
+    public void showMainMenuFromChild(){
+        showMainMenu();
+    }
+
     public static void main(String[] args) {
         launch(args); //Start the app
     }
