@@ -6,9 +6,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import model.Employee;
+import service.EmployeeManager;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EmployeeUI {
+    private App app;
+    private EmployeeManager employeeManager;
+
     private TableView<Employee> table;
     private ObservableList<Employee> employeeData;
     private Scene scene;
@@ -41,20 +46,28 @@ public class EmployeeUI {
         return id;
     }
 
-    public EmployeeUI (App app){
+    public EmployeeUI (App app,EmployeeManager employeeManager){
+        this.app=app;
+        this.employeeManager=employeeManager;
         employeeData = FXCollections.observableArrayList();
+        if (employeeManager.getAllEmployees() != null) {
+            employeeData.addAll(employeeManager.getAllEmployees());
+        }
+
+
+
 
         table = new TableView<>();
         table.setItems(employeeData);
 
         TableColumn<Employee, String> idCol = new TableColumn<>("ID");
-        idCol.setCellValueFactory(new PropertyValueFactory<>("Id"));
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
         TableColumn<Employee, String> nameCol = new TableColumn<>("Name");
-        nameCol.setCellValueFactory(new PropertyValueFactory<>("Name"));
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         TableColumn<Employee,String> deptCol=new TableColumn<>("Department");
-        deptCol.setCellValueFactory(new PropertyValueFactory<>("Department"));
+        deptCol.setCellValueFactory(new PropertyValueFactory<>("department"));
 
         table.getColumns().addAll(idCol, nameCol,deptCol);
 
@@ -77,7 +90,11 @@ public class EmployeeUI {
             if (!name.isEmpty() && dept != null) {
                 int code=getDepartmentCode(dept);
                 String newId = generateUniqueId(code);
-                employeeData.add(new Employee(newId, name, dept));
+                Employee newEmployee = new Employee(newId,name,dept);
+                employeeData.add(newEmployee);
+                employeeManager.addEmployee(newEmployee);
+
+                employeeManager.saveToFile("emplyees.json");
 
                 nameInput.clear();
                 //Reset the combobox
@@ -99,6 +116,8 @@ public class EmployeeUI {
             Employee selected = table.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 employeeData.remove(selected);
+                employeeManager.deleteEmployee(selected.getId());
+                employeeManager.saveToFile("employees.json");
             }
         });
         //===============Back Button================

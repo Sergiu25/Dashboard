@@ -11,9 +11,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Employee;
+import service.BenefitManager;
+import service.EmployeeManager;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 public class App extends Application{
+
+    private final EmployeeManager employeeManager = new EmployeeManager();
+    private final BenefitManager benefitManager = new BenefitManager();
 
     private Stage primaryStage;
 
@@ -22,7 +28,17 @@ public class App extends Application{
         this.primaryStage = primaryStage;
         primaryStage.setTitle("Dashboard");
 
+        //Load the information when the app starts
+        employeeManager.loadFromFile("employees.json");
+        benefitManager.loadFromFile("benefits.json");
+
         showMainMenu();
+
+        //Save the information when the app close
+        primaryStage.setOnCloseRequest(event -> {
+            employeeManager.saveToFile("employees.json");
+            benefitManager.saveToFile("benefits.json");
+        });
     }
     private void showMainMenu(){
         Button employeeBtn= new Button("Manage Employees");
@@ -47,7 +63,7 @@ public class App extends Application{
         primaryStage.show();
     }
     private void showEmployeeScene(){
-        EmployeeUI employeeUI = new EmployeeUI(this);
+        EmployeeUI employeeUI = new EmployeeUI(this, employeeManager);
         primaryStage.setScene(employeeUI.getScene());
     }
 
