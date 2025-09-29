@@ -2,16 +2,16 @@ package model;
 
 public class Benefit {
     private int id;
-    private String name;
+    private BenefitType type;
     private double cost;
-    public Benefit(int id, String name, double cost) {
+    public Benefit(int id, BenefitType type, double cost) {
         this.id = id;
-        this.name = name;
+        this.type = type;
         this.cost = cost;
     }
     @Override
     public String toString(){
-        return "model.Benefit{id="+id+", name="+name+", cost="+cost+"}";
+        return "model.Benefit{id="+id+", type="+type+", cost="+cost+"}";
     }
 
     public int getId() {
@@ -30,10 +30,10 @@ public class Benefit {
         this.cost = cost;
     }
 
-    public String getName(){
-        return name;
+    public BenefitType getType(){
+        return type;
     }
-    public void setName(String name){
-        this.name = name;
+    public void setType(BenefitType type){
+        this.type = type;
     }
 }

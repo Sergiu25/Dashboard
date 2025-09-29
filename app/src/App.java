@@ -41,17 +41,12 @@ public class App extends Application{
         });
     }
     private void showMainMenu(){
+// ==================Manage Employees button===================
         Button employeeBtn= new Button("Manage Employees");
         employeeBtn.setOnAction(e -> showEmployeeScene());
-
+//=================Manage Benefit button======================
         Button benefitBtn= new Button("Manage Benefits");
-        benefitBtn.setOnAction(e -> {
-            //Placeholder temporary
-            Button backBtn= new Button("Back");
-            backBtn.setOnAction(ev->showMainMenu());
-            VBox box= new VBox(20,new javafx.scene.control.Label("Benefits in work..."),backBtn);
-            primaryStage.setScene(new Scene(box,400,300));
-        });
+        benefitBtn.setOnAction(e -> showBenefitScene());
 
         Button exitBtn= new Button("Exit");
         exitBtn.setOnAction(e ->primaryStage.close());
@@ -65,6 +60,10 @@ public class App extends Application{
     private void showEmployeeScene(){
         EmployeeUI employeeUI = new EmployeeUI(this, employeeManager);
         primaryStage.setScene(employeeUI.getScene());
+    }
+    private void showBenefitScene(){
+        BenefitUI benefitUI = new BenefitUI(this, benefitManager);
+        primaryStage.setScene(benefitUI.getScene());
     }
 
     public void showMainMenuFromChild(){

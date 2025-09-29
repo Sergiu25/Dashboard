@@ -41,27 +41,9 @@ public class BenefitManager {
             benefits=new ArrayList<>();
         }
     }
-    public Benefit findBenefitByName(String name) {
-        for (Benefit b : benefits) {
-            if (b.getName().equalsIgnoreCase(name)) {
-                return b;
-            }
-        }
-        return null;
-    }
 
-    public boolean updateBenefit(String name, Benefit updatedBenefit) {
-        for (int i = 0; i < benefits.size(); i++) {
-            if (benefits.get(i).getName().equalsIgnoreCase(name)) {
-                benefits.set(i, updatedBenefit);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean deleteBenefit(String name) {
-        return benefits.removeIf(b -> b.getName().equalsIgnoreCase(name));
+    public boolean deleteBenefit(int id) {
+        return benefits.removeIf(b -> b.getId()==id);
     }
 
     public List<Benefit> getAllBenefits() {

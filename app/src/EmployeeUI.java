@@ -94,7 +94,7 @@ public class EmployeeUI {
                 employeeData.add(newEmployee);
                 employeeManager.addEmployee(newEmployee);
 
-                employeeManager.saveToFile("emplyees.json");
+                employeeManager.saveToFile("employees.json");
 
                 nameInput.clear();
                 //Reset the combobox
