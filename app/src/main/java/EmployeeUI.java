@@ -5,6 +5,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import model.Department;
 import model.Employee;
 import service.EmployeeManager;
 
@@ -20,7 +21,6 @@ public class EmployeeUI {
         this.app = app;
         this.employeeManager = employeeManager;
 
-        // Încărcăm din DB
         employeeData = FXCollections.observableArrayList(employeeManager.getAllEmployees());
 
         table = new TableView<>();
@@ -32,7 +32,7 @@ public class EmployeeUI {
         TableColumn<Employee, String> nameCol = new TableColumn<>("Name");
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn<Employee, String> deptCol = new TableColumn<>("Department");
+        TableColumn<Employee, Department> deptCol = new TableColumn<>("Department");
         deptCol.setCellValueFactory(new PropertyValueFactory<>("department"));
 
         table.getColumns().addAll(idCol, nameCol, deptCol);
@@ -40,23 +40,23 @@ public class EmployeeUI {
         TextField nameInput = new TextField();
         nameInput.setPromptText("Nume angajat");
 
-        ComboBox<String> employeeType = new ComboBox<>();
-        employeeType.getItems().addAll("Manager", "HR", "IT", "Finance", "Marketing", "Purchasing", "Logistics");
+        ComboBox<Department> employeeType = new ComboBox<>();
+        employeeType.getItems().addAll(Department.values());
         employeeType.setPromptText("Choose The Department");
 
-        // Păstrăm "Choose The Department" după clear
         employeeType.setButtonCell(new ListCell<>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
+            protected void updateItem(Department item, boolean empty) {
                 super.updateItem(item, empty);
-                setText((empty || item == null) ? "Choose The Department" : item);
+                setText((empty || item == null) ? "Choose The Department" : item.toString());
             }
         });
+
         employeeType.setCellFactory(cb -> new ListCell<>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
+            protected void updateItem(Department item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty ? null : item);
+                setText(empty || item == null ? null : item.toString());
             }
         });
 
@@ -64,13 +64,11 @@ public class EmployeeUI {
         Button addBtn = new Button("Add");
         addBtn.setOnAction(e -> {
             String name = nameInput.getText().trim();
-            String dept = employeeType.getValue();
+            Department dept = employeeType.getValue();
 
             if (!name.isEmpty() && dept != null) {
                 Employee newEmployee = new Employee(null, name, dept);
                 employeeManager.addEmployee(newEmployee);
-
-                // Reîncărcăm din DB (acum are ID real)
                 employeeData.setAll(employeeManager.getAllEmployees());
 
                 nameInput.clear();
@@ -86,8 +84,6 @@ public class EmployeeUI {
                 boolean deleted = employeeManager.deleteEmployee(selected.getId());
                 if (deleted) {
                     employeeData.setAll(employeeManager.getAllEmployees());
-                } else {
-                    System.out.println("⚠️ Nothing deleted for ID: " + selected.getId());
                 }
             }
         });
@@ -96,7 +92,7 @@ public class EmployeeUI {
         Button backBtn = new Button("Back");
         backBtn.setOnAction(e -> app.showMainMenuFromChild());
 
-        HBox controls = new HBox(10, nameInput, addBtn, employeeType, deleteBtn, backBtn);
+        HBox controls = new HBox(10, nameInput, employeeType, addBtn, deleteBtn, backBtn);
 
         BorderPane root = new BorderPane();
         root.setCenter(table);

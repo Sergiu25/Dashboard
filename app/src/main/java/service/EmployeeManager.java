@@ -1,5 +1,6 @@
 package service;
 
+import model.Department;
 import model.Employee;
 
 import java.sql.*;
@@ -9,14 +10,13 @@ import java.util.List;
 public class EmployeeManager {
 
     // ===================== ADD =====================
-    // Lăsăm DB să genereze singur ID-ul (AUTOINCREMENT)
     public void addEmployee(Employee employee) {
         String sql = "INSERT INTO employees (name, department) VALUES (?, ?)";
         try (Connection conn = DBManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, employee.getName());
-            pstmt.setString(2, employee.getDepartment());
+            pstmt.setString(2, employee.getDepartment().name()); // salvează enum ca text
 
             int rows = pstmt.executeUpdate();
             System.out.println("Inserted rows: " + rows);
@@ -35,12 +35,15 @@ public class EmployeeManager {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                int rawId = rs.getInt("id"); // AUTOINCREMENT ID din DB
-                String formattedId = String.format("%05d", rawId); // ex: 00001
+                int rawId = rs.getInt("id");
+                String formattedId = String.format("%05d", rawId);
+
+                Department dept = Department.valueOf(rs.getString("department"));
+
                 employees.add(new Employee(
                         formattedId,
                         rs.getString("name"),
-                        rs.getString("department")
+                        dept
                 ));
             }
 
@@ -57,7 +60,7 @@ public class EmployeeManager {
         try (Connection conn = DBManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            int numericId = Integer.parseInt(formattedId); // "00001" -> 1
+            int numericId = Integer.parseInt(formattedId);
             pstmt.setInt(1, numericId);
 
             int rows = pstmt.executeUpdate();

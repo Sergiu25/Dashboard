@@ -109,29 +109,29 @@ public class App extends Application{
         Scene scene = new Scene(root, 800, 500);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-        // ✅ Responsive scaling
+        //  Responsive scaling
         scene.widthProperty().addListener((obs, oldVal, newVal) -> {
             double w = newVal.doubleValue();
 
-            // titlu între 18px și 48px
+
             double titleSize = Math.max(18, Math.min(w / 15, 48));
             title.setStyle("-fx-font-size: " + titleSize + "px; -fx-text-fill: #66fcf1; -fx-font-weight: bold;");
 
-            // butoane între 12px și 22px
+
             double buttonSize = Math.max(12, Math.min(w / 40, 22));
             adminBtn.setStyle("-fx-font-size: " + buttonSize + "px;");
             clientBtn.setStyle("-fx-font-size: " + buttonSize + "px;");
 
-            // exit între 10px și 16px
+
             double exitSize = Math.max(10, Math.min(w / 60, 16));
             exitBtn.setStyle("-fx-font-size: " + exitSize + "px;");
 
-            // iconițele cresc proporțional
+            // the icons gets bigger proportional
             adminIcon.setIconSize((int)(w / 20));
             clientIcon.setIconSize((int)(w / 25));
         });
 
-        // ✅ Responsive scaling pentru height (doar titlu)
+       //Responsive only for title
         scene.heightProperty().addListener((obs, oldVal, newVal) -> {
             double h = newVal.doubleValue();
             double titleSize = Math.max(18, Math.min(h / 10, 48));
