@@ -1,0 +1,62 @@
+/* ================= FUNDAL ================= */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #0b0c10, #1f2833);
+}
+
+/* ================= TITLU ================= */
+.welcome-title {
+    -fx-font-size: 28px; /* valoare de start, va fi suprascrisă din Java */
+    -fx-font-weight: bold;
+    -fx-text-fill: #66fcf1;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+
+/* ================= BUTOANE MARI (Admin/Client) ================= */
+.big-button {
+    -fx-font-size: 18px; /* valoare de start, va fi suprascrisă din Java */
+    -fx-text-fill: #c5c6c7;
+    -fx-min-width: 200px;
+    -fx-min-height: 160px;
+    -fx-background-color: #0b0c10;
+    -fx-background-radius: 20;
+    -fx-border-color: #66fcf1;
+    -fx-border-radius: 20;
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+    -fx-alignment: center;
+}
+
+.big-button:hover {
+    -fx-background-color: #1f2833;
+    -fx-border-color: #45a29e;
+    -fx-effect: dropshadow(gaussian, #66fcf1, 25, 0.9, 0, 0);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* ================= EXIT BUTTON ================= */
+.exit-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ff4c4c;
+    -fx-font-size: 14px; /* valoare de start, va fi suprascrisă din Java */
+    -fx-font-weight: bold;
+    -fx-border-color: #ff4c4c;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-padding: 5 15;
+    -fx-background-radius: 8;
+}
+
+.exit-button:hover {
+    -fx-background-color: #ff4c4c;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+/* ================= ICON HIGHLIGHT ================= */
+.icon-highlight {
+    -fx-background-color: rgba(102, 252, 241, 0.15); /* cyan semi-transparent */
+    -fx-background-radius: 50%;
+    -fx-padding: 15; /* spațiu în jurul iconiței */
+}

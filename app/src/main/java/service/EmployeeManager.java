@@ -2,71 +2,71 @@ package service;
 
 import model.Employee;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Type;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeManager {
-    private List<Employee> employees = new ArrayList<>();
-    private final Gson gson = new Gson();
 
+    // ===================== ADD =====================
+    // Lăsăm DB să genereze singur ID-ul (AUTOINCREMENT)
     public void addEmployee(Employee employee) {
-        employees.add(employee);
-    }
+        String sql = "INSERT INTO employees (name, department) VALUES (?, ?)";
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-    public List<Employee> getEmployees() {
-        return employees;
-    }
+            pstmt.setString(1, employee.getName());
+            pstmt.setString(2, employee.getDepartment());
 
-    //Save the employees in files
-    public void saveToFile(String fileName) {
-        try(FileWriter writer=new FileWriter(fileName)){
-            gson.toJson(employees, writer);
+            int rows = pstmt.executeUpdate();
+            System.out.println("Inserted rows: " + rows);
 
-        }catch(IOException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    public void loadFromFile(String fileName) {
-        try (FileReader reader=new FileReader(fileName)){
-            Type listType = new TypeToken<ArrayList<Employee>>(){}.getType();
-            employees = gson.fromJson(reader,listType);
-            if(employees==null){
-                employees = new ArrayList<>();
+
+    // ===================== GET ALL =====================
+    public List<Employee> getAllEmployees() {
+        List<Employee> employees = new ArrayList<>();
+        String sql = "SELECT id, name, department FROM employees ORDER BY id";
+        try (Connection conn = DBManager.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                int rawId = rs.getInt("id"); // AUTOINCREMENT ID din DB
+                String formattedId = String.format("%05d", rawId); // ex: 00001
+                employees.add(new Employee(
+                        formattedId,
+                        rs.getString("name"),
+                        rs.getString("department")
+                ));
             }
-        }catch(IOException e){
-            employees = new ArrayList<>();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    }
-    public Employee findEmployeeByName(String name) {
-        for (Employee e : employees) {
-            if (e.getName().equalsIgnoreCase(name)) {
-                return e;
-            }
-        }
-        return null; // dacă nu există
+        System.out.println("Loaded employees: " + employees.size());
+        return employees;
     }
 
-    public boolean updateEmployee(String name, Employee updatedEmployee) {
-        for (int i = 0; i < employees.size(); i++) {
-            if (employees.get(i).getName().equalsIgnoreCase(name)) {
-                employees.set(i, updatedEmployee);
-                return true;
-            }
+    // ===================== DELETE =====================
+    public boolean deleteEmployee(String formattedId) {
+        String sql = "DELETE FROM employees WHERE id = ?";
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            int numericId = Integer.parseInt(formattedId); // "00001" -> 1
+            pstmt.setInt(1, numericId);
+
+            int rows = pstmt.executeUpdate();
+            System.out.println("Deleted rows: " + rows);
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return false;
-    }
-
-    public boolean deleteEmployee(String id) {
-       return employees.removeIf(e->e.getId().equalsIgnoreCase(id));
-    }
-
-    public List<Employee> getAllEmployees() {
-        return employees;
     }
 }

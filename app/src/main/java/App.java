@@ -27,16 +27,15 @@ public class App extends Application{
         primaryStage.setTitle("Dashboard");
 
        DBManager.initDatabase();
-       DBManager.testInsertAndSelect();
         //Load the information when the app starts
-        employeeManager.loadFromFile("employees.json");
+
         benefitManager.loadFromFile("benefits.json");
 
         showWelcomeScreen();
 
         //Save the information when the app close
         primaryStage.setOnCloseRequest(event -> {
-            employeeManager.saveToFile("employees.json");
+
             benefitManager.saveToFile("benefits.json");
         });
     }
@@ -56,47 +55,94 @@ public class App extends Application{
     private void showWelcomeScreen() {
         Label title = new Label("Dashboard");
         title.getStyleClass().add("welcome-title");
-        //Admin Button
-        FontIcon adminIcon=new FontIcon(FontAwesomeSolid.LOCK);
+
+        // ================= Admin Button =================
+        FontIcon adminIcon = new FontIcon(FontAwesomeSolid.LOCK);
         adminIcon.setIconSize(40);
         adminIcon.setIconColor(javafx.scene.paint.Color.valueOf("#66fcf1"));
 
-        Button adminBtn=new Button("Admin",adminIcon);
-        adminBtn.getStyleClass().addAll("big-button","admin-button");
+        StackPane adminIconWrapper = new StackPane(adminIcon);
+        adminIconWrapper.getStyleClass().add("icon-highlight");
+
+        Button adminBtn = new Button("Admin", adminIconWrapper);
+        adminBtn.getStyleClass().addAll("big-button", "admin-button");
         adminBtn.setContentDisplay(ContentDisplay.TOP);
+        adminBtn.setMaxWidth(Double.MAX_VALUE);
         adminBtn.setOnAction(e -> showAdminLogin());
-        //Client Button
-        FontIcon clientIcon=new FontIcon(FontAwesomeSolid.USER);
-        clientIcon.setIconSize(24);
+
+        // ================= Client Button =================
+        FontIcon clientIcon = new FontIcon(FontAwesomeSolid.USER);
+        clientIcon.setIconSize(40);
         clientIcon.setIconColor(javafx.scene.paint.Color.valueOf("#66fcf1"));
 
-        Button clientBtn=new Button("Client",clientIcon);
-        clientBtn.getStyleClass().addAll("big-button","client-button");
+        StackPane clientIconWrapper = new StackPane(clientIcon);
+        clientIconWrapper.getStyleClass().add("icon-highlight");
+
+        Button clientBtn = new Button("Client", clientIconWrapper);
+        clientBtn.getStyleClass().addAll("big-button", "client-button");
         clientBtn.setContentDisplay(ContentDisplay.TOP);
+        clientBtn.setMaxWidth(Double.MAX_VALUE);
         clientBtn.setOnAction(e -> showClientLogin());
 
-        HBox hbox=new HBox(80,clientBtn,adminBtn);
-        hbox.setStyle("-fx-alignment:center; -fx-padding:50;");
+        // ================= Exit Button =================
+        Button exitBtn = new Button("Exit");
+        exitBtn.getStyleClass().add("exit-button");
+        exitBtn.setOnAction(e -> primaryStage.close());
 
-        HBox titleBox=new HBox(title);
-        titleBox.setStyle("-fx-alignment:center;");
+        // ================= Layout =================
+        HBox buttonBox = new HBox(40, clientBtn, adminBtn);
+        buttonBox.setStyle("-fx-alignment:center; -fx-padding:20;");
+        HBox.setHgrow(clientBtn, javafx.scene.layout.Priority.ALWAYS);
+        HBox.setHgrow(adminBtn, javafx.scene.layout.Priority.ALWAYS);
 
-        VBox root=new VBox(50,title,hbox);
-        root.setStyle("-fx-alignment:center; -fx-padding:60;");
+        VBox centerBox = new VBox(40, title, buttonBox);
+        centerBox.setStyle("-fx-alignment:center;");
 
-        title.setMaxWidth(Double.MAX_VALUE);
-        title.getStyleClass().add("welcome-title");
+        BorderPane root = new BorderPane();
+        root.setCenter(centerBox);
+        root.setBottom(exitBtn);
+        BorderPane.setAlignment(exitBtn, javafx.geometry.Pos.CENTER);
+        BorderPane.setMargin(exitBtn, new javafx.geometry.Insets(20));
 
         applyAnimatedBackground(root);
 
-        Scene scene=new Scene(root,600,400);
-
+        Scene scene = new Scene(root, 800, 500);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+        // ✅ Responsive scaling
+        scene.widthProperty().addListener((obs, oldVal, newVal) -> {
+            double w = newVal.doubleValue();
+
+            // titlu între 18px și 48px
+            double titleSize = Math.max(18, Math.min(w / 15, 48));
+            title.setStyle("-fx-font-size: " + titleSize + "px; -fx-text-fill: #66fcf1; -fx-font-weight: bold;");
+
+            // butoane între 12px și 22px
+            double buttonSize = Math.max(12, Math.min(w / 40, 22));
+            adminBtn.setStyle("-fx-font-size: " + buttonSize + "px;");
+            clientBtn.setStyle("-fx-font-size: " + buttonSize + "px;");
+
+            // exit între 10px și 16px
+            double exitSize = Math.max(10, Math.min(w / 60, 16));
+            exitBtn.setStyle("-fx-font-size: " + exitSize + "px;");
+
+            // iconițele cresc proporțional
+            adminIcon.setIconSize((int)(w / 20));
+            clientIcon.setIconSize((int)(w / 25));
+        });
+
+        // ✅ Responsive scaling pentru height (doar titlu)
+        scene.heightProperty().addListener((obs, oldVal, newVal) -> {
+            double h = newVal.doubleValue();
+            double titleSize = Math.max(18, Math.min(h / 10, 48));
+            title.setStyle("-fx-font-size: " + titleSize + "px; -fx-text-fill: #66fcf1; -fx-font-weight: bold;");
+        });
 
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-//================Admin login==============
+
+    //================Admin login==============
     private void showAdminLogin() {
         PasswordField passwordField=new PasswordField();
         passwordField.setPromptText("Enter Admin Password");
